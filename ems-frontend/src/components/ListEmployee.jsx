@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { listEmployees } from '../services/EmployeeService'
+import { deleteEmployee, listEmployees } from '../services/EmployeeService'
 import { useNavigate } from 'react-router-dom'
 
 function ListEmployee() {
@@ -9,17 +9,36 @@ function ListEmployee() {
     const navigator = useNavigate();
 
     useEffect(() => {
+        getAllEmployees();
+    }, [])
+
+    function getAllEmployees() {
         listEmployees().then((response) => {
             setEmployees(response.data);
         }).catch(error => {
             console.error(error);
         })
-
-    }, [])
+    }
 
     function addNewEmployee() {
         navigator('/add-employee')
     }
+
+    function updateEmployee(id) {
+        navigator(`/update-employee/${id}`)
+    }
+
+    function removeEmployee(id) {
+        console.log(id);
+
+        deleteEmployee(id).then((response) => {
+            getAllEmployees();
+
+        }).catch(error => {
+            console.error(error);
+        })
+    }
+
 
     // const dummyData = [
     //     {
@@ -60,6 +79,7 @@ function ListEmployee() {
                     <th>Employee First Name</th>
                     <th>Employee Last Name</th>
                     <th>Employee Email</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -70,6 +90,10 @@ function ListEmployee() {
                             <td>{employee.firstName}</td>
                             <td>{employee.lastName}</td>
                             <td>{employee.email}</td>
+                            <td className=''>
+                                <button className='btn btn-light' onClick={() => updateEmployee(employee.id)}>Update</button>
+                                <button className='btn btn-danger m-2' onClick={() => removeEmployee(employee.id)}>Delete</button>
+                            </td>
                         </tr>)
                 }
                 
